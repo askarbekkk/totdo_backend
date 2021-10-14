@@ -1,6 +1,4 @@
 const uniqid = require('uniqid');
-const axios = require('axios')
-const path = require('path')
 const express = require('express')
 const fs = require("fs");
 
@@ -21,14 +19,15 @@ function getData(category) {
 server.get('/api/v1/tasks/:category', async (req, res) => {
 //
     const {category} = req.params
-    console.log(req.params)
-    let task = await getData(category)
+    // console.log(req.params)
+    // let task = await getData(category)
+    const task = withoutUnderline(await getData(category))
+
     res.json(task)
 })
 
 server.post('/api/v1/tasks/:category', async (req, res) => {
-    const {category} = req.params
-    let tasks = getData(category)
+
     let newTask = {
         taskId: uniqid(),
         title: req.body.title,
@@ -37,6 +36,8 @@ server.post('/api/v1/tasks/:category', async (req, res) => {
         _createdAt: +new Date(),
         _deletedAt: null
     }
+    const {category} = req.params
+    let tasks = getData(category)
     let newTasks = [...tasks, newTask]
     fs.writeFile(`./tasks/${category}.json`, JSON.stringify(newTasks, null, 2), function (err) {
         if (err) throw err;
@@ -50,7 +51,7 @@ server.patch('/api/v1/tasks/:category/:id', (req, res) => {
     const {category} = req.params
     let task = getData(category )
     let id = req.params.id
-    let newTask = task.map(el => el.taskId === id ? {...el, ...req.body} : el)
+    let newTask = task.map(el => el.taskId === req.params.id ? {...el, ...req.body} : el)
     fs.writeFileSync(`./tasks/${category}.json`, JSON.stringify(newTask, null, 2))
     res.json({status: 'Updated'})
 })
@@ -69,7 +70,7 @@ server.delete('/api/v1/tasks/:category/', (req, res) => {
 server.delete('/api/v1/tasks/:category/:id', (req, res) => {
 
     const {category,id} = req.params
-    let tasks = getData(category,id)
+    let tasks = getData(category)
     let newTasks = tasks.filter(el => el.taskId !== id)
     fs.writeFileSync(`./tasks/${category}.json/`, JSON.stringify(newTasks,null,2))
     res.json({status: 'task is deleted'})
@@ -81,11 +82,11 @@ server.put('/api/v1/tasks/:category/', (req, res) => {
     const {category} = req.params
     let task = getData(category )
     console.log(req.params)
-    fs.writeFileSync(`./tasks/${category}.json`, JSON.stringify(task, null, 2))
+    fs.writeFileSync(`./tasks.${category}/${category}.json`, JSON.stringify(task, null, 2))
     res.json({status: 'tasks were updated'})
 })
 
-server.listen(8000, () => console.log('Server is started'))
+server.listen( 8000, () => console.log('Server is started'))
 
 
 // //const tasks = JSON.parse(fs.readFileSync(('./tasks/shop.json').resolve(__dirname, 'shop.json'), 'utf-8'))

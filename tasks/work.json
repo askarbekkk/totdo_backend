@@ -1,13 +1,5 @@
 [
   {
-    "taskId": " 345U345NK",
-    "title": "Task4",
-    "_isDeleted": false,
-    "_createdAt": 123456,
-    "_deletedAt": 1234500,
-    "status": "done"
-  },
-  {
     "taskId": "4m9eawknnn3a6t",
     "status": "new",
     "_isDeleted": false,
